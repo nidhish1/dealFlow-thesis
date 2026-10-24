@@ -44,3 +44,10 @@ node /absolute/path/to/sites/scripts/build-site.mjs
 - `.openai/hosting.json`: existing Site identity and hosting configuration
 
 Starter thesis content is illustrative. Companies in the Sourcing tab come only from Akta requests. See the [Akta API reference](https://docs.akta.pro/api-reference/listgen-api) for current endpoint and plan details.
+
+
+## Company review and partner demo
+
+Open a shortlisted company's **View company** action to review its overview, known facts, thesis context, and evidence. **Load full profile** fetches Akta firmographic, location, business model, and management sections on demand and may consume credits. Profiles are cached temporarily; fields unavailable from Akta stay missing. Profile loading reassesses returned evidence against the current thesis and updates saved companies.
+
+Add review notes and click **Send to partner · Demo** on a shortlisted company. This prepares a local demo brief and shows a confirmation. It does not call email, messaging, or any external recipient service. Notes and demo status persist with the shortlist in this browser.

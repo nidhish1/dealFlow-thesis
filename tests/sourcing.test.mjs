@@ -33,3 +33,15 @@ test('timeout/network errors and malformed provider responses are handled',async
  const bad=await handleSourcing(request({thesis:{...thesis,id:'bad-shape'}}),{AKTA_API_KEY:'test'},async()=>Response.json({oops:true}));assert.equal(bad.status,502);
  const network=await handleSourcing(request({thesis:{...thesis,id:'network'}}),{AKTA_API_KEY:'test'},async()=>{throw new Error('network with private details')});assert.equal(network.status,502);assert.ok(!(await network.text()).includes('private details'));
 });
+test('company profile uses fixed Akta endpoint, normalizes business and leaders, and caches',async()=>{
+ const profileThesis={...thesis,id:'profile-test'};let calls=0;
+ const req=()=>new Request('https://thesis.test/api/sourcing/company',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({thesis:profileThesis,companyId:'profile-123'})});
+ const mock=async(url,options)=>{calls++;const u=new URL(url);assert.equal(u.origin,'https://api.akta.pro');assert.equal(u.pathname,'/api/v1/company/enrichment/');assert.equal(u.searchParams.get('company'),'profile-123');assert.equal(u.searchParams.get('sections'),'firmographic,location,business_model,management_profile');assert.equal(options.headers['x-api-key'],'profile-key');assert.equal(options.redirect,'manual');return Response.json({data:{uuid:'profile-123',firmographic:{name:'Detailed Company',website:'company.example',company_description:'Enterprise AI workflows',founded_year:2023},location:{hq:{country:'USA'}},business_model:{revenue_model:[{title:'Subscription',description:'Recurring customer fees',source:['https://company.example/pricing','javascript:alert(1)']}]},management_profile:{profiles:[{name:'Example Founder',designation:'CEO',overview:'Builds workflow software',source:['https://company.example/about']}]}},credits_consumed:9});};
+ const first=await (await handleSourcing(req(),{AKTA_API_KEY:'profile-key'},mock)).json();assert.equal(first.company.name,'Detailed Company');assert.equal(first.company.profile.leaders[0].role,'CEO');assert.equal(first.company.profile.revenueModels[0].sources.length,1);assert.equal(first.creditsConsumed,9);assert.ok(!JSON.stringify(first).includes('profile-key'));
+ const second=await (await handleSourcing(req(),{AKTA_API_KEY:'profile-key'},mock)).json();assert.equal(second.cacheHit,true);assert.equal(second.creditsConsumed,0);assert.equal(calls,1);
+});
+test('company profile rejects invalid IDs and mismatched provider identity',async()=>{
+ const req=id=>new Request('https://thesis.test/api/sourcing/company',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({thesis,companyId:id})});
+ const invalid=await handleSourcing(req('https://evil.example'),{AKTA_API_KEY:'test'},()=>{throw new Error('should not fetch')});assert.equal(invalid.status,400);
+ const mismatch=await handleSourcing(req('wanted-company'),{AKTA_API_KEY:'test'},async()=>Response.json({data:{uuid:'different-company',firmographic:{name:'Different'}}}));assert.equal(mismatch.status,502);
+});
