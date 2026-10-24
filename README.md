@@ -1,6 +1,12 @@
-# Thesis
+# dealFlow-thesis
 
 An investment thesis workspace with Akta-powered company sourcing.
+
+## Live platform
+
+[Open the private Thesis workspace](https://thesis-vertical-workspace.fundrum12.chatgpt.site). Access is restricted to the Site owner.
+
+The [investment-thesis template](docs/investment-thesis-template.md) provides a reusable framework for market, team, traction, risks, and investment decisions.
 
 ## Features
 
