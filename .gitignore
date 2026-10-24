@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.next/
+.vinext/
+.wrangler/
+.openai/local/
+.env
+.env.*
+!.env.example
+.dev.vars
+*.log
+.sites-runtime/
+*.tsbuildinfo
+outputs/
+work/
