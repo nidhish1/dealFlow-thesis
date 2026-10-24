@@ -18,7 +18,7 @@ Changing a thesis invalidates its old discovery view. Older shortlisted companie
 
 The existing Site stays owner-private. Sites dispatch enforces viewer/service access before the worker. `/api/sourcing/*` uses that private boundary and rejects cross-origin browser POSTs. Keep the Site private unless server authorization is added for a broader audience.
 
-Configure `AKTA_API_KEY` as a **secret** using Sites runtime environment settings. It is read only by the server worker and is never sent to the browser, embedded in assets, or stored in localStorage. `.env.example` documents the variable name without a credential. The API destination is fixed to Akta, redirects are rejected, and upstream error bodies are not relayed.
+Configure `AKTA_API_KEY` as a **secret** using Sites runtime environment settings. It is read only by the server worker and is never sent to the browser, embedded in assets, or stored in localStorage. `.env.example` documents the variable name without a credential. The API destination is fixed to Akta, redirects are handled manually and never followed, and upstream error bodies are not relayed.
 
 ## Development
 
